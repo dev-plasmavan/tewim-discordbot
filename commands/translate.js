@@ -19,6 +19,8 @@ module.exports = {
                 .setRequired(false)
         ),
     async execute(interaction) {
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+        
         try {
             const inputtedText = interaction.options.getString('text');
             
@@ -49,7 +51,7 @@ module.exports = {
             const row = new ActionRowBuilder()
                 .addComponents(languageSelectMenu)
 
-            await interaction.reply({
+            await interaction.editReply({
                 content: `Select a language to translate the text: ${inputtedText}`,
                 components: [row],
             });
@@ -69,18 +71,18 @@ module.exports = {
                     await userResponse.delete();
         
                     if (isSecret) {
-                        await i.reply({ content: responseText, flags: MessageFlags.Ephemeral });
+                        await i.editReply({ content: responseText, flags: MessageFlags.Ephemeral });
                     } else {
-                        await i.reply(responseText);
+                        await i.editReply(responseText);
                     }
                 } catch (error) {
                     console.error(error);
-                    await i.reply({ content: 'There was an error while executing this command.', flags: MessageFlags.Ephemeral });
+                    await i.editReply({ content: 'There was an error while executing this command.', flags: MessageFlags.Ephemeral });
                 }
             });
         } catch (error) {
             console.error(error);
-            await interaction.reply({ content: 'There was an error while executing this command.', flags: MessageFlags.Ephemeral });
+            await interaction.editReply({ content: 'There was an error while executing this command.', flags: MessageFlags.Ephemeral });
         }
     },
 };

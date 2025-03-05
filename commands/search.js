@@ -21,7 +21,7 @@ module.exports = {
                 .setRequired(false)
         ),
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: false });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         
         try {
             const prompt = interaction.options.getString('content').trim();

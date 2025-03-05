@@ -1,7 +1,9 @@
+require('dotenv').config();
+
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const axios = require('axios');
-require('dotenv').config();
+
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -38,17 +40,14 @@ module.exports = {
                 .setRequired(false)
         ),
     async execute(interaction) {
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
         try {
+            const attachment = interaction.options.getAttachment('attachment');
             const isSecret = interaction.options.getBoolean('hide') || false;
             
-            await interaction.deferReply({
-                ephemeral: isSecret
-            });
-            
-            const attachment = interaction.options.getAttachment('attachment');
-            
             if (!attachment) {
-                return interaction.editReply('No valid attachment found.');
+                return interaction.editReply({ content: 'No valid attachment found.', flags: MessageFlags.Ephemeral });
             }
             
             const attachmentUrl = attachment.url;
@@ -56,17 +55,18 @@ module.exports = {
             const imagePart = await urlToGenerativePart(attachmentUrl, mimeType);
             
             const prompt = `Tell me about this image.`;
+            
             const result = await model.generateContent([prompt, imagePart]);
             const responseText = result.response.text();
             
             if (isSecret) {
                 await interaction.editReply({ content: responseText, flags: MessageFlags.Ephemeral });
-            } else {    
+            } else {
                 await interaction.editReply(responseText);
             }
         } catch (error) {
             console.error('Error in image command:', error);
-            await interaction.followUp({ content: 'There was an error processing your image. Please try again.', flag: MessageFlags.Ephemeral });
+            await interaction.editReply({ content: 'There was an error processing your image. Please try again.', flags: MessageFlags.Ephemeral });
         }
     }
 }

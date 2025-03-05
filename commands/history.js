@@ -16,7 +16,7 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         try {
             const selectedAction = interaction.options.getString('action');
