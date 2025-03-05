@@ -35,10 +35,10 @@ module.exports = {
                 .slice(0, 9) || [];
 
             if (webSearchResults.length > 0) {
-                responseText += "\nWeb Search Results:\n";
+                responseText += "\n\n**Web Search Sources:**\n";
                 webSearchResults.forEach((chunk, index) => {
                     const web = chunk.web;
-                    responseText += `Source ${index + 1}: ${web.title || 'Untitled'}:\n`;
+                    responseText += `${index + 1}: ${web.title || 'Untitled'}\t`;
                 });
             }
 
